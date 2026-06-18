@@ -1,0 +1,117 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+//#include <QGuiApplication>
+#include <QApplication>
+#include <QtWidgets>
+#include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <QActionGroup>
+#include <QFutureWatcher>
+
+#include "AboutDialog.h"
+#include "CaptureBox.h"
+#include "OcrEngine.h"
+#include "PopupDialog.h"
+#include "PreProcess.h"
+#include "Preview.h"
+#include "SettingsDialog.h"
+#include "Translate.h"
+#include "WelcomeDialog.h"
+
+//class MainWindow : public QWidget
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(bool portable);
+    ~MainWindow();
+
+private slots:
+    void hotkeyPressed(int id);
+
+private:
+    const int minOcrWidth = 3;
+    const int minOcrHeight = 3;
+
+    void captureBoxCaptured();
+    void startCaptureBox();
+    void endCaptureBox();
+    void createTrayMenu();
+    void populateOcrLangMap();
+    void showAbout();
+    void showSettingsDialog();
+    void selectOutputClipboardFromMenu();
+    void selectOutputPopupFromMenu();
+    void selectModeCaptureBoxFromMenu();
+    void selectModeTriggerFromMenu();
+    void selectLangFromMenu();
+    void selectTextOrientationAutoFromMenu();
+    void selectTextOrientationHorizontalFromMenu();
+    void selectTextOrientationVerticalAutoFromMenu();
+    void outputOcrText(QString text);
+    void performForwardTextLineCapture(QPoint pt);
+    void performTextLineCapture(QPoint pt);
+    void performBubbleCapture(QPoint pt);
+    QImage takeScreenshot(QRect &rect);
+    bool isOrientationVertical();
+    void setOcrLang(QString lang);
+    void captureBoxMoved();
+    void captureBoxStoppedMoving();
+    void captureBoxCancel();
+    QString ocrCaptureBoxArea();
+    void ocrPreviewComplete();
+    void ocrCaptureComplete();
+    void settingsAccepted();
+    QString postProcess(QString text, bool forceRemoveLineBreaks=false);
+    void registerHotkeys();
+    void checkCurrentTextOrientationInMenu();
+    void outputOcrTextPhase2(QString text, QString translation);
+    void translationComplete(QString phrase, QString translation, bool error);
+    void setOcrEngineCommon();
+    QString getDebugImagePath(QString filename);
+
+    enum HotkeyAction
+    {
+        CAPTURE_BOX = 1000,
+        RE_CAPTURE_LAST,
+        TEXTLINE_CAPTURE,
+        FORWARD_TEXTLINE_CAPTURE,
+        BUBBLE_CAPTURE,
+        LANG_1,
+        LANG_2,
+        LANG_3,
+        TEXT_ORIENTATION,
+        ENABLE_WHITELIST,
+        ENABLE_BLACKLIST,
+    };
+
+    CaptureBox captureBox;
+    CaptureBox autoCaptureBox;
+    Preview previewBox;
+    Preview infoBox;
+    OcrEngine *ocrEngine;
+    PreProcess preProcess;
+    QSystemTrayIcon *trayIcon;
+    QDateTime captureTimestamp;
+
+    QMenu *menuTrayIcon;
+    QAction *actionSaveToClipboard;
+    QAction *actionShowPopupWindow;
+    QActionGroup *actionGroupOcrLang;
+    QActionGroup *actionGroupTextOrientation;
+
+    QFutureWatcher<QString> watcherPreview;
+    bool pendingPreviewRequest;
+
+    QFutureWatcher<QString> watcherCapture;
+    PopupDialog popupDialog;
+    SettingsDialog settingsDialog;
+    AboutDialog aboutDialog;
+    WelcomeDialog welcomeDialog;
+
+    Translate translate;
+};
+
+#endif // MAINWINDOW_H
