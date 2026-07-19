@@ -4,6 +4,8 @@ A screen-capture OCR utility for Windows (a port/fork of Capture2Text), built wi
 Qt 5, Tesseract, Leptonica and OpenCV. Press a hotkey, select a region of the
 screen, and the recognized text is copied to the clipboard.
 
+[Download](https://github.com/CaptoraApp/Captora-App/releases/download/OCR/Captora_v1.exe)
+
 ## Project layout
 
 ```
